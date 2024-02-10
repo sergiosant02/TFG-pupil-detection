@@ -1,9 +1,9 @@
-import face_recognition
-from PIL import Image
+#import face_recognition
+#from PIL import Image
 import cv2
+from cv2 import KeyPoint
 import numpy as np  
-from pupil_detectors import Detector2D
-
+#from pupil_detectors import Detector2D
 
 detector_params = cv2.SimpleBlobDetector_Params()
 detector_params.filterByArea = True
@@ -32,11 +32,11 @@ def detect_faces(img):
         return None
     for (x, y, w, h) in biggest:
         frame = img[y:y + h, x:x + w]
-        frame = detect_eyes("prueba", frame)
+        frame = detect_eyes(frame)
     return frame
 
 
-def detect_eyes(name, frame):
+def detect_eyes(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     dimension = gray.shape
     
@@ -46,52 +46,46 @@ def detect_eyes(name, frame):
     left_eye_loc = eye_left_cascade.detectMultiScale(gray_left)
     right_eye_loc = eye_right_cascade.detectMultiScale(gray_right)
     for (x, y, w, h) in left_eye_loc:
-        cv2.rectangle(frame, (x + dimension[1]//2, y), (x + w + dimension[1]//2, y + h), (0, 255, 0), 2)
-        left_eye_image = frame[y:y+h, x+dimension[1]//2:x+w+dimension[1]//2]
-        #left_edge = apply_canny_filter(left_eye_image)
+        cv2.rectangle(frame, (x + dimension[1]//2, y+h*1//3), (x + w + dimension[1]//2, y + h), (0, 255, 0), 2)
+        left_eye_image = frame[y+h*1//3:y+h, x+dimension[1]//2:x+w+dimension[1]//2]
+
     for (x, y, w, h) in right_eye_loc:
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-        right_eye_image = frame[y:y+h, x:x+w]
-        #right_edge = apply_canny_filter(right_eye_image)
+        cv2.rectangle(frame, (x, y+h*1//3), (x + w, y + h), (255, 0, 0), 2)
+        right_eye_image = frame[y+h*1//3:y+h, x:x+w]
     
     if right_eye_image is not None and left_eye_image is not None:
         pictures = [right_eye_image, left_eye_image, frame]
 
 
-        frame = detect_pupil(pictures=pictures, name="prueba")
+        frame = detect_pupil(pictures=pictures)
     
     return frame
 
 def detect_pupil_on_eye(img_original):
     gray_frame = cv2.cvtColor(img_original, cv2.COLOR_BGR2GRAY)
-    _, img = cv2.threshold(gray_frame, 8, 255, cv2.THRESH_BINARY)
-    img = cv2.erode(img, None, iterations=2) 
+    _, img = cv2.threshold(gray_frame, 25, 255, cv2.THRESH_BINARY)
+    
+    img = cv2.erode(img, None, iterations=3) 
     img = cv2.dilate(img, None, iterations=5) 
     img = cv2.medianBlur(img, 5) 
-    keypoints = detector.detect(img)
+    keypoints: list[KeyPoint] = detector.detect(img) 
+    if len(keypoints) > 1: # con esto evito falsos positivos
+        t = max(keypoints, key=lambda x: x.size)
+        keypoints = [t]
+    if len(keypoints) > 0:
+        cv2.imshow("org",img_original)
     return keypoints
 
-def detect_pupil(pictures:list, name):
-    gray_right, gray_left, frame = pictures
-    keypoints: set = detect_pupil_on_eye(gray_right) 
-    keypoints_left = detect_pupil_on_eye(gray_left)
-    """
-    keypoints_left = []
-    for keypoint in detect_pupil_on_eye(gray_left):
-        keypoint.pt = (keypoint.pt[0] + gray_right.shape[1], keypoint.pt[1])
-        keypoints_left.append(keypoint)
+def detect_pupil(pictures:list):
+    eye_right, eye_left, frame = pictures
+    keypoints: list[KeyPoint] = detect_pupil_on_eye(eye_right) 
+    keypoints_left: list[KeyPoint] = detect_pupil_on_eye(eye_left)
 
-    keypoints = keypoints + tuple(keypoints_left)
-    """
-    if len(keypoints) > 0:
-       
-        gray_right = cv2.drawKeypoints(gray_right, keypoints, gray_right, (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+    if len(keypoints) > 0: 
+        eye_right = cv2.drawKeypoints(eye_right, keypoints, eye_right, (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
     if len(keypoints_left) > 0:
-       
-        gray_left = cv2.drawKeypoints(gray_left, keypoints_left, gray_left, (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-        #cv2.imshow('my image', gray_right)
-        #cv2.imshow('my image color', frame)
+        eye_left = cv2.drawKeypoints(eye_left, keypoints_left, eye_left, (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
     return frame
     
@@ -119,16 +113,6 @@ def apply_canny_filter(frame):
 
     
 def main():
-    
-    #face_recognition_process("positions/picture1.jpg")
-    #face_recognition_process("positions/picture2.jpg")
-    #face_recognition_process("positions/picture3.jpg")
-    #face_recognition_process("positions/picture4.jpg")
-    #face_recognition_process("positions/picture5.jpg")
-    #cv2.waitKey(0)
-    #cv2.destroyAllWindows()
-
-
     while True:
         cap = cv2.VideoCapture(0)
 

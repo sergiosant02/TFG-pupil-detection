@@ -2,7 +2,7 @@ import face_recognition
 from PIL import Image
 import cv2
 import numpy as np  
-from pupil_detectors import Detector2D
+#from pupil_detectors import Detector2D
 
 
 detector_params = cv2.SimpleBlobDetector_Params()
