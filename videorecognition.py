@@ -23,21 +23,23 @@ def detect_faces(img):
     if len(coords) > 1:
         biggest = (0, 0, 0, 0)
         for i in coords:
-            if i[3] > biggest[3]:
+            if abs( i[3]) > abs(biggest[3]):
                 biggest = i
-        biggest = np.array([i], np.int32)
+        biggest = np.array(i, np.int32)
     elif len(coords) == 1:
-        biggest = coords
+        biggest = coords[0]
     else:
         return None
-    for (x, y, w, h) in biggest:
+    if biggest is not None:
+        x,y,w,h = biggest
+        gray_frame = gray_frame[y:y + h, x:x + w]
+        cv2.rectangle(img, (x,y+h), (x+w, y), (0, 0, 0), 2)
         frame = img[y:y + h, x:x + w]
-        frame = detect_eyes(frame)
-    return frame
+        frame = detect_eyes(frame ,gray_frame)
+    return img
 
 
-def detect_eyes(frame):
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+def detect_eyes(frame, gray):
     dimension = gray.shape
     
     gray_left = gray[:dimension[0]//2, dimension[1]//2:]
@@ -63,6 +65,9 @@ def detect_eyes(frame):
 
 def detect_pupil_on_eye(img_original):
     gray_frame = cv2.cvtColor(img_original, cv2.COLOR_BGR2GRAY)
+    #gray_frame = cv2.equalizeHist(gray_frame1)
+    #comp = np.hstack((gray_frame1, gray_frame))
+    #cv2.imshow("post", comp)
     _, img = cv2.threshold(gray_frame, 25, 255, cv2.THRESH_BINARY)
     
     img = cv2.erode(img, None, iterations=3) 
@@ -72,8 +77,6 @@ def detect_pupil_on_eye(img_original):
     if len(keypoints) > 1: # con esto evito falsos positivos
         t = max(keypoints, key=lambda x: x.size)
         keypoints = [t]
-    if len(keypoints) > 0:
-        cv2.imshow("org",img_original)
     return keypoints
 
 def detect_pupil(pictures:list):
@@ -118,9 +121,9 @@ def main():
 
         ret, frame = cap.read()
 
-        if ret and frame is not None and frame.any():
+        if frame is not None and frame.any():
             frame = detect_faces(img=frame)
-            if frame is not None and frame.shape[0] > 0 and frame.shape[1] > 0:
+            if frame is not None and frame.shape[0] > 0:
                 cv2.imshow('frame', frame)
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break

@@ -2,4 +2,12 @@ dlib
 face_recognition
 opencv-python
 numpy
-pupil-detectors
+#pupil-detectors # posiblemente prescindible
+pyautogui
+pygame
+mediapipe # para face_mesh
+cvzone # para face_mesh
+git+https://github.com/cvzone/cvzone.git # por si falla el de arriba
+PyGame 
+PyOpenGL 
+PyOpenGL_accelerate
