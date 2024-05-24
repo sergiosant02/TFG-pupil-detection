@@ -5,6 +5,8 @@ import pyautogui
 from mouse_control import MouseControl
 from interpolate2D import InterpolatePixelTarget
 import time
+from tkinter import Canvas, BOTH
+from statsModel import RecordModel,Stats
 
 class EyeControlledMouse:
 
@@ -22,6 +24,9 @@ class EyeControlledMouse:
         self.decimal_precision = 3
         self.time_reference = 0
         self.laps = 2
+        self.records: list[RecordModel] = []
+        self.record: RecordModel
+        self.flag = False
 
     def get_coordenates_decimal(self, index):
         return (self.landmarks[index].x * self.frame_w, self.landmarks[index].y * self.frame_h)
@@ -54,7 +59,9 @@ class EyeControlledMouse:
         cv2.circle(frame, self.left_pupile, 1, (0, 255, 255))
         cv2.circle(frame, self.right_pupile, 1, (0, 0, 255))
 
-        right_eye_landmarks = [self.landmarks[i] for i in [362,398,384,385,386,387,388,466,263,282,381,380,374,373,390,249]]
+        right_eye_landmarks = [self.landmarks[i] for i in [362,398,384,385,386,387,388,466,263,381,380,374,373,390,249]]
+        for i in right_eye_landmarks:
+            cv2.circle(frame, (int(self.frame_w*i.x), int(self.frame_h*i.y)), 1, (255, 255, 255))
         eye_x = sum([lm.x for lm in right_eye_landmarks]) / len(right_eye_landmarks)
         eye_y = sum([lm.y for lm in right_eye_landmarks]) / len(right_eye_landmarks)
         screen_x = self.frame_w * eye_x
@@ -107,17 +114,24 @@ class EyeControlledMouse:
                     x = int(landmark.x * self.frame_w)
                     y = int(landmark.y * self.frame_h)
                     cv2.circle(frame, (x, y), 3, (0, 255, 255))
-                if len(self.ui_control.coordenates) >= (9 * self.laps) and (left[0].y - left[1].y) < 0.006 and not (right[0].y - right[1].y) < 0.006:
-                    self.get_curent_relative_move()
-                if len(self.ui_control.coordenates) >= (9 * self.laps) and (right[0].y - right[1].y) < 0.006 and not (right[0].y - right[1].y) < 0.006:
-                    self.mouse_control.double_click()
-                if len(self.ui_control.coordenates) >= (9 * self.laps) and (left[0].y - left[1].y) < 0.006 and (right[0].y - right[1].y) < 0.006 and self.time_reference == 0:
+                if len(self.ui_control.coordenates) >= (9 * self.laps) and (left[0].y - left[1].y) < 0.006 and not (right[0].y - right[1].y) < 0.006:  # Abierto solo derecho
+                    self.get_curent_absolute_move()
+                    if self.ui_control.test_index != None:
+                        self.record.recorded.append(self.mouse_control.get_current_position())
+                        self.flag = True
+                if len(self.ui_control.coordenates) >= (9 * self.laps) and (right[0].y - right[1].y) < 0.006 and not (left[0].y - left[1].y) < 0.006: # Parpadeo derecho
+                    self.mouse_control.click()
+                if len(self.ui_control.coordenates) >= (9 * self.laps) and (left[0].y - left[1].y) < 0.006 and (right[0].y - right[1].y) < 0.006 and self.time_reference == 0: # Cierre de ambos ojos
                     self.time_reference = time.time()
-                elif len(self.ui_control.coordenates) >= (9 * self.laps) and (left[0].y - left[1].y) < 0.006 and (right[0].y - right[1].y) < 0.006 and self.time_reference != 0 and time.time() - self.time_reference > 2:
+                elif len(self.ui_control.coordenates) >= (9 * self.laps) and (left[0].y - left[1].y) < 0.006 and (right[0].y - right[1].y) < 0.006 and self.time_reference != 0 and time.time() - self.time_reference > 2: # Cierre de ambos ojos confirmación
                     self.mouse_control.right_click()
                     self.time_reference = 0
-                if len(self.ui_control.coordenates) >= (9 * self.laps) and ((left[0].y - left[1].y) > 0.006 or (right[0].y - right[1].y) > 0.006):
+                if len(self.ui_control.coordenates) >= (9 * self.laps) and ((left[0].y - left[1].y) > 0.006 or (right[0].y - right[1].y) > 0.006): # Alguno de los ojos abiertos
                     self.time_reference = 0
+                if len(self.ui_control.coordenates) >= (9 * self.laps) and ((left[0].y - left[1].y) > 0.006 and (right[0].y - right[1].y) > 0.006): # Alguno de los ojos abiertos
+                    if self.flag:
+                        self.add_test()
+                        self.flag = False
                     #pyautogui.click()
                     #pyautogui.sleep(1)     
                 self.ui_control.face_frame = frame
@@ -127,6 +141,7 @@ class EyeControlledMouse:
                 left_eye_left_corner, left_eye_right_corner  = self.generate_rectangle_coordenates(self.eye_up_left, self.left_eye1, self.eye_down_left)
                 left_eye_crop = frame[left_eye_left_corner[1]:left_eye_right_corner[1],  left_eye_left_corner[0]:left_eye_right_corner[0]]
                 self.ui_control.left_eye_frame = left_eye_crop
+
     
     def log_next_coordenate(self):
         if len(self.ui_control.coordenates) >= (9 * self.laps) - 1:
@@ -142,7 +157,7 @@ class EyeControlledMouse:
             self.ui_control.labels[(len(self.ui_control.coordenates)-1)%9].configure(text=f"({coordenate[0]:.3f}, {coordenate[1]:.3f})")
         
 
-    def get_curent_relative_move(self):
+    def get_curent_absolute_move(self):
         if self.interpolator is None:
             self.interpolator = InterpolatePixelTarget(self.ui_control)
         right_pupile_decimal = self.get_coordenates_decimal(473)
@@ -153,15 +168,35 @@ class EyeControlledMouse:
             next_position = (int(next_position_decimal[0]), int(next_position_decimal[1]))
             print("next_position: ", next_position)
             self.mouse_control.absolute_move(next_position)
-            #time.sleep(0.5)
-        """
-        move = tuple(x - y for x, y in zip(self.right_pupile, self.right_center))
-        if self.ui_control.right_correction is not None:
-            move = tuple(x + y for x, y in zip(move, self.ui_control.right_correction))
-        print(move)
-        self.mouse_control.relative_move(move)
-        """
 
-if __name__ == "__main__":
-    eye_controlled_mouse = EyeControlledMouse()
-    eye_controlled_mouse.run()
+    def add_test(self):
+        if self.ui_control.test_index == None:
+            self.ui_control.test_index = 0
+            self.ui_control.test_point = self.ui_control.test_points[self.ui_control.test_index]
+            self.record = RecordModel(self.ui_control.test_point)
+            self.ui_control.test_point_box = Canvas(self.ui_control.app, width=self.ui_control.box_size, height=self.ui_control.box_size, background="red", highlightbackground="red", highlightthickness=self.ui_control.box_size+self.ui_control.text_box_increment )
+            self.ui_control.test_point_box.place(x=self.ui_control.test_points[0][0], y=self.ui_control.test_points[0][1])
+            self.ui_control.test_button.pack_forget()
+            self.ui_control.save_test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
+            self.ui_control.reset_test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
+        elif self.ui_control.test_index != None and self.ui_control.test_index < len(self.ui_control.test_points)-1:
+            self.records.append(self.record)
+            self.ui_control.test_index += 1 
+            self.ui_control.test_point = self.ui_control.test_points[self.ui_control.test_index]
+            self.record = RecordModel(self.ui_control.test_point)
+            self.ui_control.test_point_box.place(x=self.ui_control.test_points[self.ui_control.test_index][0], y=self.ui_control.test_points[self.ui_control.test_index][1])
+        else:
+            self.records.append(self.record)
+            self.record = None
+            self.ui_control.test_index = None
+            self.ui_control.test_point_box.place_forget()
+
+    def save_test_results(self):
+        stats: Stats = Stats(self.records)
+        stats.generate_frame()
+
+    def reset_test(self):
+        self.record = None
+        self.ui_control.test_index = None
+        self.records = []
+    

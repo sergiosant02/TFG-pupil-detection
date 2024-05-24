@@ -23,6 +23,11 @@ class UiControl:
       self.bottom_height = self.height // 2
       self.threshold = 25
       self.box_size = 5
+      self.text_box_increment = 3
+      self.test_points = []
+      self.test_point = None
+      self.test_point_box = None
+      self.test_index = None
       self.vid = cv2.VideoCapture(0) 
       self.left_correction = None
       self.right_correction = None
@@ -118,11 +123,15 @@ class UiControl:
       self.slider.pack(fill=BOTH, expand=True, padx=10, pady=5)
 
       # Botón y Label
-      self.right_correction_label = Label(button_frame, wraplength=300, justify="left", text="Si desea aplicar una corrección del centro del ojo, para aquellos casos en los que hay una leve diferencia entre el punto azul y el rojo central cuando mira al centro de la pantalla, mire hacia el punto verde y mientras lo hace pulse el botón para corregir")
+      self.right_correction_label = Label(button_frame, wraplength=300, justify="left", text='Para iniciar los test debes pullsar el botón inferior, en caso de querer calibrar el sistema deberá de pulsar sobre sobre "Registrar siguiente coordenada"')
       self.right_correction_label.pack(fill=BOTH, expand=True, padx=10, pady=5)
 
-      correction_button = Button(button_frame, text="Aplicar corrección", command=mediapipe_det.calculate_correction)
-      correction_button.pack(fill=BOTH, expand=True, padx=10, pady=5)
+      self.correction_button = Button(button_frame, text="Aplicar corrección", command=mediapipe_det.calculate_correction)
+      #correction_button.pack(fill=BOTH, expand=True, padx=10, pady=5)
+      self.test_button = Button(button_frame, text="Comenzar las pruebas", command=mediapipe_det.add_test)
+      self.reset_test_button = Button(button_frame, text="Comenzar las pruebas", command=mediapipe_det.reset_test)
+      self.test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
+      self.save_test_button = Button(button_frame, text="Guardar las pruebas", command=mediapipe_det.save_test_results)
 
       # Labels adicionales
       for i in range(3):
@@ -143,6 +152,7 @@ class UiControl:
       self.select_mode.grid(row=4, columnspan=3, pady=5)
 
       self.generate_default_canvas()
+      self.app.focus_force()
 
 
    def update_threshold_slider(self, value):
@@ -193,7 +203,7 @@ class UiControl:
       self.face_label.photo_image = face_tk_image 
       self.face_label.configure(image=face_tk_image) 
 
-      self.right_correction_label.config(text=f"Right correction: {self.right_correction}")
+      #self.right_correction_label.config(text=f"Right correction: {self.right_correction}")
         
       self.left_eye_label.photo_image = left_eye_tk_image
       self.left_eye_label.configure(image=left_eye_tk_image)
@@ -207,19 +217,42 @@ class UiControl:
       self.app.mainloop()
 
    def generate_default_coordenates(self):
+      txy1_up = (self.width//3 - self.box_size + self.text_box_increment, self.height//8 - self.box_size - 1.5*self.text_box_increment)
+      txy2_up = (2*self.width//3 - self.box_size + self.text_box_increment, self.height//8 - self.box_size - 1.5*self.text_box_increment)
+      self.test_points = [txy1_up, txy2_up]
       for h in [1,2,3]:
-         xy1 = (self.width//6 - self.box_size, h * self.height//4 - self.box_size)
-         xy2 = (self.width//2 - self.box_size, h * self.height//4 - self.box_size)
-         xy3 = (5*self.width//6 - self.box_size, h * self.height//4 - self.box_size)
+         txy1 = (self.width//12 - self.box_size - 1.5*self.text_box_increment, h * self.height//4 - self.box_size - 1.5*self.text_box_increment)
+         xy1 = (self.width//6 + 0.25*self.box_size, h * self.height//4 - self.box_size)
+         txy2 = (self.width//3 - self.box_size - 1.5*self.text_box_increment, h * self.height//4 - self.box_size - 1.5*self.text_box_increment)
+         xy2 = (self.width//2 + 0.25*self.box_size, h * self.height//4 - self.box_size)
+         txy3 = (2*self.width//3 - self.box_size - 1.5*self.text_box_increment, h * self.height//4 - self.box_size - 1.5*self.text_box_increment)
+         xy3 = (5*self.width//6 + 0.25*self.box_size, h * self.height//4 - self.box_size)
+         txy4 = (11*self.width//12 - self.box_size - 1.5*self.text_box_increment, h * self.height//4 - self.box_size - 1.5*self.text_box_increment)
          self.default_coordenates.append(xy1)
          self.default_coordenates.append(xy2)
          self.default_coordenates.append(xy3)
+
+         self.test_points.append(txy1)
+         self.test_points.append(txy2)
+         self.test_points.append(txy3)
+         self.test_points.append(txy4)
+      txy1_down = (self.width//3 - self.box_size + self.text_box_increment, 7*self.height//8 - self.box_size - 1.5*self.text_box_increment)
+      txy2_down = (2*self.width//3 - self.box_size + self.text_box_increment, 7*self.height//8 - self.box_size - 1.5*self.text_box_increment)
+
+      self.test_points.append(txy1_down)
+      self.test_points.append(txy2_down)
 
    def generate_default_canvas(self):
       for i in range(9):
          canvas = Canvas(self.app, width=self.box_size, height=self.box_size, background="green", highlightbackground="orange", highlightthickness=2 )
          canvas.place(x=self.default_coordenates[i][0], y=self.default_coordenates[i][1])
          self.canvas.append(canvas)
+
+   def reset_test(self):
+      self.test_index = None
+      self.test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
+      self.save_test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
+      self.reset_test_button.pack_forget()
 
 if __name__ == "__main__":
    ui = UiControl()

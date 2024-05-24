@@ -11,3 +11,4 @@ git+https://github.com/cvzone/cvzone.git # por si falla el de arriba
 PyGame 
 PyOpenGL 
 PyOpenGL_accelerate
+pandas

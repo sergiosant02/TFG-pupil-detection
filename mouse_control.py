@@ -7,6 +7,8 @@ class MouseControl:
         print("Mouse started")
         print("current mouse size:", pyautogui.size())
 
+    def get_current_position(self):
+        return [pyautogui.position().x, pyautogui.position().y]
     
     def relative_move(self, direction):
         pyautogui.FAILSAFE = False
