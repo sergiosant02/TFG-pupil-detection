@@ -8,7 +8,7 @@
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "ui_control.py",
+            "program": "application_controller.py",
             "console": "integratedTerminal"
         }
     ]

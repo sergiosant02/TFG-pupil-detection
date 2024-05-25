@@ -2,11 +2,11 @@ from tkinter import *
 from tkinter.ttk import Combobox
 import cv2 
 from PIL import Image, ImageTk 
-from mediapipe_detection import EyeControlledMouse
 
 class UiControl:
-   def __init__(self):
+   def __init__(self, controller):
       self.app = Tk() 
+      self.controller = controller
       self.app.title("Pupil detection")
       self.face_placeholder = Image.open('placeholders/face_placeholder.jpg')
       self.eye_placeholder = Image.open('placeholders/eye_placeholder.png')
@@ -14,7 +14,6 @@ class UiControl:
       self.left_eye_frame: cv2.Mat = None
       self.right_eye_frame: cv2.Mat = None
       self.width, self.height = self.app.winfo_screenwidth(), self.app.winfo_screenheight() 
-      print(self.app.winfo_screenwidth(), self.app.winfo_screenheight())
       self.pictures_space_height = self.height // 2
       self.main_width = self.width
       self.main_height = self.height // 2
@@ -24,20 +23,18 @@ class UiControl:
       self.threshold = 25
       self.box_size = 5
       self.text_box_increment = 3
-      self.test_points = []
+      self.test_points: list = []
       self.test_point = None
-      self.test_point_box = None
+      self.test_point_box: Canvas = None
       self.test_index = None
-      self.vid = cv2.VideoCapture(0) 
       self.left_correction = None
       self.right_correction = None
-      self.labels = []
+      self.labels: list[Label] = []
       self.coordenates = []
-      self.method = "Relativo"
-      self.canvas = []
+      self.canvas: list[Canvas] = []
       self.default_coordenates = []
 
-   def check_ninth_coordinate(self):
+   def check_nineth_coordinate(self):
       if len(self.coordenates) >= 8:
         self.register_button.grid_forget()
         self.reset_button.grid(row=3, columnspan=3, pady=5)
@@ -53,18 +50,14 @@ class UiControl:
             label_text = f"Coordenada {i*3+j+1}"
             self.labels[index].configure(text=label_text)
             index += 1
-      self.check_ninth_coordinate()
+      self.check_nineth_coordinate()
 
    def focus_in_handler(self, event):
       self.app.focus_set()
 
-   def change_method(self, event):
-      self.method = event.widget.get()
-      print(self.method)
-
-   def setup_ui(self, mediapipe_det: EyeControlledMouse):
-      self.vid.set(cv2.CAP_PROP_FRAME_WIDTH, self.main_width) 
-      self.vid.set(cv2.CAP_PROP_FRAME_HEIGHT, self.main_height) 
+   def setup_ui(self):
+      self.controller.vid.set(cv2.CAP_PROP_FRAME_WIDTH, self.main_width) 
+      self.controller.vid.set(cv2.CAP_PROP_FRAME_HEIGHT, self.main_height) 
       self.generate_default_coordenates()
       self.app.bind('<Escape>', lambda e: self.app.quit()) 
       dimensions = '{}x{}+{}+{}'.format(self.width, self.height, 0, 0)
@@ -112,26 +105,26 @@ class UiControl:
 
       # Slider y Entry
       threshold_label_info = Label(slider_frame, text="Threshold:")
-      threshold_label_info.pack(anchor=W, padx=10)
+      #threshold_label_info.pack(anchor=W, padx=10)
 
       self.threshold_box = Entry(slider_frame, width=5)
       self.threshold_box.bind("<KeyRelease>", self.update_threshold_entry)
-      self.threshold_box.pack(anchor=W, padx=10)
+      #self.threshold_box.pack(anchor=W, padx=10)
 
       self.slider = Scale(slider_frame, from_=0, to=255, orient=HORIZONTAL, command=self.update_threshold_slider)
       self.slider.set(self.threshold)
-      self.slider.pack(fill=BOTH, expand=True, padx=10, pady=5)
+      #self.slider.pack(fill=BOTH, expand=True, padx=10, pady=5)
 
       # Botón y Label
       self.right_correction_label = Label(button_frame, wraplength=300, justify="left", text='Para iniciar los test debes pullsar el botón inferior, en caso de querer calibrar el sistema deberá de pulsar sobre sobre "Registrar siguiente coordenada"')
       self.right_correction_label.pack(fill=BOTH, expand=True, padx=10, pady=5)
 
-      self.correction_button = Button(button_frame, text="Aplicar corrección", command=mediapipe_det.calculate_correction)
+      self.correction_button = Button(button_frame, text="Aplicar corrección", command=self.controller.calculate_correction)
       #correction_button.pack(fill=BOTH, expand=True, padx=10, pady=5)
-      self.test_button = Button(button_frame, text="Comenzar las pruebas", command=mediapipe_det.add_test)
-      self.reset_test_button = Button(button_frame, text="Comenzar las pruebas", command=mediapipe_det.reset_test)
+      self.test_button = Button(button_frame, text="Comenzar las pruebas", command=self.controller.add_test)
+      self.reset_test_button = Button(button_frame, text="Comenzar las pruebas", command=self.controller.reset_test)
       self.test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
-      self.save_test_button = Button(button_frame, text="Guardar las pruebas", command=mediapipe_det.save_test_results)
+      self.save_test_button = Button(button_frame, text="Guardar las pruebas", command=self.controller.save_test_results)
 
       # Labels adicionales
       for i in range(3):
@@ -142,17 +135,11 @@ class UiControl:
             self.labels.append(label)
 
       # Botón para registrar la siguiente coordenada
-      self.register_button = Button(labels_frame, text="Registrar siguiente coordenada", command=mediapipe_det.log_next_coordenate)
+      self.register_button = Button(labels_frame, text="Registrar siguiente coordenada", command=self.controller.log_next_coordenates)
       self.register_button.grid(row=3, columnspan=3, pady=5)
       self.reset_button = Button(labels_frame, text="Reiniciar", command=self.reset_coordenates)
-      #self.select_mode = Combobox(labels_frame, values=["Relativo", "Absoluto"], postcommand=self.change_method)
-      self.select_mode = Combobox(labels_frame, values=["Relativo", "Absoluto"])
-      self.select_mode.set("Relativo")  # Establecer el valor predeterminado
-      self.select_mode.bind("<<ComboboxSelected>>", self.change_method)
-      self.select_mode.grid(row=4, columnspan=3, pady=5)
 
       self.generate_default_canvas()
-      self.app.focus_force()
 
 
    def update_threshold_slider(self, value):
@@ -174,11 +161,10 @@ class UiControl:
       self.threshold_box.delete(0, END)
       self.threshold_box.insert(0, str(value_int))
 
-   def open_camera(self, face_mesh_detector: EyeControlledMouse): 
-      _, frame = self.vid.read() 
-
-      face_mesh_detector.run(frame)
-
+   def open_camera(self): 
+      
+      self.controller.open_camera()
+      
       if self.face_frame is not None and self.face_frame.all() != None and self.face_frame.size > 0:
          self.face_image = cv2.cvtColor(self.face_frame, cv2.COLOR_BGR2RGBA) 
          face_array = Image.fromarray(self.face_image) 
@@ -210,11 +196,7 @@ class UiControl:
 
       self.right_eye_label.photo_image = right_eye_tk_image
       self.right_eye_label.configure(image=right_eye_tk_image)
-      self.face_label.after(1, self.open_camera, face_mesh_detector)
-      
-   def start(self, face_mesh_detector: EyeControlledMouse):
-      self.open_camera(face_mesh_detector)
-      self.app.mainloop()
+      self.face_label.after(1, self.open_camera)
 
    def generate_default_coordenates(self):
       txy1_up = (self.width//3 - self.box_size + self.text_box_increment, self.height//8 - self.box_size - 1.5*self.text_box_increment)
@@ -222,11 +204,11 @@ class UiControl:
       self.test_points = [txy1_up, txy2_up]
       for h in [1,2,3]:
          txy1 = (self.width//12 - self.box_size - 1.5*self.text_box_increment, h * self.height//4 - self.box_size - 1.5*self.text_box_increment)
-         xy1 = (self.width//6 + 0.25*self.box_size, h * self.height//4 - self.box_size)
+         xy1 = (self.width//6 + self.box_size, h * self.height//4 - self.box_size)
          txy2 = (self.width//3 - self.box_size - 1.5*self.text_box_increment, h * self.height//4 - self.box_size - 1.5*self.text_box_increment)
-         xy2 = (self.width//2 + 0.25*self.box_size, h * self.height//4 - self.box_size)
+         xy2 = (self.width//2 + self.box_size, h * self.height//4 - self.box_size)
          txy3 = (2*self.width//3 - self.box_size - 1.5*self.text_box_increment, h * self.height//4 - self.box_size - 1.5*self.text_box_increment)
-         xy3 = (5*self.width//6 + 0.25*self.box_size, h * self.height//4 - self.box_size)
+         xy3 = (5*self.width//6 + self.box_size, h * self.height//4 - self.box_size)
          txy4 = (11*self.width//12 - self.box_size - 1.5*self.text_box_increment, h * self.height//4 - self.box_size - 1.5*self.text_box_increment)
          self.default_coordenates.append(xy1)
          self.default_coordenates.append(xy2)
@@ -254,8 +236,44 @@ class UiControl:
       self.save_test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
       self.reset_test_button.pack_forget()
 
-if __name__ == "__main__":
-   ui = UiControl()
-   mediapipe_det = EyeControlledMouse(ui)
-   ui.setup_ui(mediapipe_det)
-   ui.start(mediapipe_det)
+   def bring_to_front(self):
+      # Traer la ventana al frente y centrarla.
+      self.app.attributes('-topmost', True)  # Temporalmente coloca la ventana al frente.
+      self.app.attributes('-topmost', False)  # Después la deja de poner al frente para no interferir con otras ventanas.
+
+   def update_current_test_point(self):
+      self.test_point = self.test_points[self.test_index]
+
+   def add_test(self):
+        if self.test_index == None:
+            self.test_index = 0
+            self.test_point = self.test_points[self.test_index]
+            self.test_point_box = Canvas(self.app, width=self.box_size, height=self.box_size, background="red", highlightbackground="red", highlightthickness=self.box_size + self.text_box_increment )
+            self.test_point_box.place(x=self.test_points[0][0], y=self.test_points[0][1])
+            self.test_button.pack_forget()
+            self.save_test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
+            self.reset_test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
+        elif self.test_index != None and self.test_index < len(self.test_points)-1:
+            self.test_index += 1 
+            self.test_point = self.test_points[self.test_index]
+            self.test_point_box.place(x=self.test_points[self.test_index][0], y=self.test_points[self.test_index][1])
+        else:
+            self.test_index = None
+            self.test_point = None
+            self.reset_test()
+
+   def reset_test(self):
+      self.test_index = None
+      self.test_point = None
+      self.test_point_box.place_forget()
+
+   def format_text_in_label(self, i: int, text):
+      self.labels[i].configure(text=text)
+
+
+
+   def start(self):
+      self.setup_ui()
+      self.open_camera()
+      self.bring_to_front()
+      self.app.mainloop()

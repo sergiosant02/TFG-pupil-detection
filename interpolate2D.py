@@ -3,17 +3,17 @@ from scipy.interpolate import interp2d, RegularGridInterpolator, Rbf
 
 class InterpolatePixelTarget:
 
-    def __init__(self, ui_control):
-        self.ui_control = ui_control
+    def __init__(self, app_controller):
+        self.app_controller = app_controller
         self.calculate_interpolation()
 
     def calculate_interpolation(self):
-        xs = np.array([(self.ui_control.coordenates[i][0] + self.ui_control.coordenates[i+9][0])/2 for i in range(9)])
-        ys = np.array([(self.ui_control.coordenates[i][1] + self.ui_control.coordenates[i+9][1])/2 for i in range(9)])
-        z1 = np.array([i[0] for i in self.ui_control.default_coordenates])
-        z2 = np.array([i[1] for i in self.ui_control.default_coordenates])
+        xs = np.array([(self.app_controller.get_coordenates()[i][0] + self.app_controller.get_coordenates()[i+9][0])/2 for i in range(9)])
+        ys = np.array([(self.app_controller.get_coordenates()[i][1] + self.app_controller.get_coordenates()[i+9][1])/2 for i in range(9)])
+        z1 = np.array([i[0] for i in self.app_controller.get_default_coordenates()])
+        z2 = np.array([i[1] for i in self.app_controller.get_default_coordenates()])
         for i in range(9):
-            self.ui_control.labels[i].configure(text=f"({xs[i]:.3f}, {ys[i]:.3f})")
+            self.app_controller.format_text_in_label(i, f"({xs[i]:.3f}, {ys[i]:.3f})")
         self.f = Rbf(xs, ys, z1, function='linear') # Interpola la coordenada x
         self.g = Rbf(xs, ys, z2, function='linear') # Interpola la coordenada y
         print(xs)
@@ -25,5 +25,4 @@ class InterpolatePixelTarget:
         print(f"Point: {point}")
         f_res = self.f(point[0], point[1])
         g_res = self.g(point[0], point[1])
-#        print(f"res-------------{(f_res[0],g_res[0])}--------------------")
         return (f_res, g_res)

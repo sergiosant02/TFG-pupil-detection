@@ -1,7 +1,8 @@
 import pandas as pd
 import datetime
 import os
-
+import pyautogui
+import math
 
 
 class RecordModel:
@@ -9,6 +10,10 @@ class RecordModel:
     def __init__(self, point, recorded: list = []) -> None:
         self.point = point
         self.recorded = recorded
+        self.view_distance = 60
+        self.width, self.height = pyautogui.size()
+        self.screen_width_cm = 52.7
+        self.screen_height_cm = 29.6
 
     def calculate_average_point(self):
         if len(self.recorded) > 0:
@@ -26,7 +31,15 @@ class RecordModel:
         if len(self.recorded) > 0:
             self.calculate_error()
             points_str = ", ".join([self.get_point_str(i) for i in self.recorded])
-            return [f"({self.point[0]}, {self.point[1]})", f"[{points_str}]", f"{len(self.recorded)}", f"({self.get_point_str(self.error)})"]
+            pixel_size_x = self.screen_width_cm / self.width
+            pixel_size_y = self.screen_height_cm / self.height
+            difference_x_cm = self.point[0] * pixel_size_x 
+            difference_y_cm = self.point[1] * pixel_size_y
+            angle_x_rad = math.atan(difference_x_cm / self.view_distance)
+            angle_y_rad = math.atan(difference_y_cm / self.view_distance)
+            angle_x_deg = math.degrees(angle_x_rad)
+            angle_y_deg = math.degrees(angle_y_rad)
+            return [f"({self.point[0]}, {self.point[1]})", f"[{points_str}]", f"{len(self.recorded)}", f"({self.get_point_str(self.error)})", f"({angle_x_deg}, {angle_y_deg})"]
         
 
 class Stats: 
@@ -43,7 +56,8 @@ class Stats:
             'point': [ i.generate_line()[0] for i in self.records],
             'recorded points': [ i.generate_line()[1] for i in self.records],
             'len': [ i.generate_line()[2] for i in self.records],
-            'error': [ i.generate_line()[3] for i in self.records]
+            'error': [ i.generate_line()[3] for i in self.records],
+            'error angle': [ i.generate_line()[4] for i in self.records]
         }
         df = pd.DataFrame(data)
 
