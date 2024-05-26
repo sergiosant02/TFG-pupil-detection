@@ -111,24 +111,31 @@ class EyeControlledMouse:
                     x = int(landmark.x * self.frame_w)
                     y = int(landmark.y * self.frame_h)
                     cv2.circle(frame, (x, y), 3, (0, 255, 255))
+
                 if len(self.ui_control.get_coordenates()) >= (9 * self.laps) and (left[0].y - left[1].y) < self.min_close and not (right[0].y - right[1].y) < self.min_close:  # Abierto solo derecho
                     self.get_curent_absolute_move()
                     if self.ui_control.get_test_index() != None:
                         self.record.recorded.append(self.mouse_control.get_current_position())
                         self.flag = True
-                if len(self.ui_control.get_coordenates()) >= (9 * self.laps) and (right[0].y - right[1].y) < self.min_close and not (left[0].y - left[1].y) < self.min_close: # Parpadeo derecho
-                    self.mouse_control.click()
-                if len(self.ui_control.get_coordenates()) >= (9 * self.laps) and (left[0].y - left[1].y) < self.min_close and (right[0].y - right[1].y) < self.min_close and self.time_reference == 0: # Cierre de ambos ojos
+                
+                if len(self.ui_control.get_coordenates()) >= (9 * self.laps) and (right[0].y - right[1].y) < self.min_close and not (left[0].y - left[1].y) < self.min_close and self.time_reference == 0: # Parpadeo derecho inicio contador
                     self.time_reference = time.time()
-                elif len(self.ui_control.get_coordenates()) >= (9 * self.laps) and (left[0].y - left[1].y) < self.min_close and (right[0].y - right[1].y) < self.min_close and self.time_reference != 0 and time.time() - self.time_reference > 2: # Cierre de ambos ojos confirmación
-                    self.mouse_control.right_click()
-                    self.time_reference = 0
-                if len(self.ui_control.get_coordenates()) >= (9 * self.laps) and ((left[0].y - left[1].y) > self.min_close or (right[0].y - right[1].y) > self.min_close): # Alguno de los ojos abiertos
-                    self.time_reference = 0
+                
+                if len(self.ui_control.get_coordenates()) >= (9 * self.laps) and (right[0].y - right[1].y) > self.min_close and not (left[0].y - left[1].y) < self.min_close and self.time_reference > 0: # Parpadeo derecho opciones
+                    current_time = time.time()
+                    if current_time -self.time_reference > 0.05 and current_time - self.time_reference <= 1:
+                        self.mouse_control.click()
+                        self.time_reference = 0
+                    elif current_time - self.time_reference > 1:
+                        self.mouse_control.right_click()
+                        self.time_reference = 0
+
+                
                 if len(self.ui_control.get_coordenates()) >= (9 * self.laps) and ((left[0].y - left[1].y) > self.min_close and (right[0].y - right[1].y) > self.min_close): # Alguno de los ojos abiertos
                     if self.flag:
                         self.ui_control.add_test()
                         self.flag = False   
+                        
                 self.ui_control.set_face_frame(frame)
                 right_eye_left_corner, right_eye_right_corner  = self.generate_rectangle_coordenates(self.eye_up_right, self.right_eye1, self.eye_down_right)
                 right_eye_crop = frame[right_eye_left_corner[1]:right_eye_right_corner[1],  right_eye_left_corner[0]:right_eye_right_corner[0]]
@@ -167,13 +174,14 @@ class EyeControlledMouse:
     def add_test(self):
         if self.ui_control.get_test_index() == 0:
             self.ui_control.update_current_test_point()
-            self.record = RecordModel(self.ui_control.get_test_point())
+            self.record = RecordModel(self.ui_control.get_test_point(), None)
         elif self.ui_control.get_test_index() != None and self.ui_control.get_test_index() > 0 and self.ui_control.get_test_index() < len(self.ui_control.get_test_points()):
             self.records.append(self.record)
-            self.record = RecordModel(self.ui_control.get_test_point())
+            self.record = RecordModel(self.ui_control.get_test_point(), None)
         else:
             self.records.append(self.record)
-            self.record = None
+            self.save_test_results()
+            self.reset_test()
 
 
     def save_test_results(self):

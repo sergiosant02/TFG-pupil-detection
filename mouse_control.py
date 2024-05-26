@@ -30,4 +30,4 @@ class MouseControl:
 
     def right_click(self):
         print("-----right click----")
-        pyautogui.rightClick()
+        pyautogui.click(button="right")

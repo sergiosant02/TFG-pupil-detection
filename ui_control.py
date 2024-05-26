@@ -122,9 +122,9 @@ class UiControl:
       self.correction_button = Button(button_frame, text="Aplicar corrección", command=self.controller.calculate_correction)
       #correction_button.pack(fill=BOTH, expand=True, padx=10, pady=5)
       self.test_button = Button(button_frame, text="Comenzar las pruebas", command=self.controller.add_test)
-      self.reset_test_button = Button(button_frame, text="Comenzar las pruebas", command=self.controller.reset_test)
+      #self.reset_test_button = Button(button_frame, text="Comenzar las pruebas", command=self.controller.reset_test)
       self.test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
-      self.save_test_button = Button(button_frame, text="Guardar las pruebas", command=self.controller.save_test_results)
+      #self.save_test_button = Button(button_frame, text="Guardar las pruebas", command=self.controller.save_test_results)
 
       # Labels adicionales
       for i in range(3):
@@ -233,8 +233,8 @@ class UiControl:
    def reset_test(self):
       self.test_index = None
       self.test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
-      self.save_test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
-      self.reset_test_button.pack_forget()
+      #self.save_test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
+      #self.reset_test_button.pack_forget()
 
    def bring_to_front(self):
       # Traer la ventana al frente y centrarla.
@@ -251,8 +251,8 @@ class UiControl:
             self.test_point_box = Canvas(self.app, width=self.box_size, height=self.box_size, background="red", highlightbackground="red", highlightthickness=self.box_size + self.text_box_increment )
             self.test_point_box.place(x=self.test_points[0][0], y=self.test_points[0][1])
             self.test_button.pack_forget()
-            self.save_test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
-            self.reset_test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
+            #self.save_test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
+            #self.reset_test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
         elif self.test_index != None and self.test_index < len(self.test_points)-1:
             self.test_index += 1 
             self.test_point = self.test_points[self.test_index]
@@ -266,6 +266,7 @@ class UiControl:
       self.test_index = None
       self.test_point = None
       self.test_point_box.place_forget()
+      self.test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
 
    def format_text_in_label(self, i: int, text):
       self.labels[i].configure(text=text)
