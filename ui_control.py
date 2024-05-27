@@ -63,47 +63,46 @@ class UiControl:
       dimensions = '{}x{}+{}+{}'.format(self.width, self.height, 0, 0)
       self.app.geometry(dimensions)
 
-      # Marco principal para los elementos de la interfaz
       main_frame = Frame(self.app)
       main_frame.pack(fill=BOTH, expand=True)
 
-      # Marco para las fotos
+      # Label for pictures
       photos_frame = Frame(main_frame)
       photos_frame.pack(fill=BOTH, expand=True)
 
-      # Etiqueta para la imagen facial
+      # Label for face
       self.face_label = Label(photos_frame, height=self.main_height, width=self.secundary_width) 
       self.face_label.pack(side=LEFT) 
 
-      # Marco para los ojos
+      # Label for eyes
       eyes_frame = Frame(photos_frame)
       eyes_frame.pack(side=LEFT)
 
-      # Etiqueta para el ojo izquierdo
+      # Label for left eye picture
       self.left_eye_label = Label(eyes_frame, height=self.secundary_height, width=self.secundary_width)
       self.left_eye_label.pack()
 
-      # Etiqueta para el ojo derecho
+      # Label for right eye picture
       self.right_eye_label = Label(eyes_frame, height=self.secundary_height, width=self.secundary_width)
       self.right_eye_label.pack()
 
-      # Marco para las pilas horizontales
+      # Frame for horizontal stacks
       horizontal_stack_frame = Frame(main_frame)
       horizontal_stack_frame.pack(fill=BOTH, expand=True)
 
-      # Marco para el slider y el entry
+      # Frame for slider and entry
       slider_frame = Frame(horizontal_stack_frame)
       slider_frame.pack(side=LEFT, fill=BOTH, expand=True)
 
-      # Marco para el botón y el label
+     # Frame for the button and label
       button_frame = Frame(horizontal_stack_frame)
       button_frame.pack(side=LEFT, fill=BOTH, expand=True)
 
-      # Marco para los 9 labels
+      # Frame for 9 labels
       labels_frame = Frame(horizontal_stack_frame)
       labels_frame.pack(side=LEFT, fill=BOTH, expand=True)
 
-      # Slider y Entry
+      # Slider and Entry
       threshold_label_info = Label(slider_frame, text="Threshold:")
       #threshold_label_info.pack(anchor=W, padx=10)
 
@@ -115,7 +114,7 @@ class UiControl:
       self.slider.set(self.threshold)
       #self.slider.pack(fill=BOTH, expand=True, padx=10, pady=5)
 
-      # Botón y Label
+      # Botón and Label
       self.right_correction_label = Label(button_frame, wraplength=300, justify="left", text='Para iniciar los test debes pullsar el botón inferior, en caso de querer calibrar el sistema deberá de pulsar sobre sobre "Registrar siguiente coordenada"')
       self.right_correction_label.pack(fill=BOTH, expand=True, padx=10, pady=5)
 
@@ -126,7 +125,7 @@ class UiControl:
       self.test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
       #self.save_test_button = Button(button_frame, text="Guardar las pruebas", command=self.controller.save_test_results)
 
-      # Labels adicionales
+      # Aditionals labels
       for i in range(3):
          for j in range(3):
             label_text = f"Coordenada {i*3+j+1}"
@@ -134,7 +133,7 @@ class UiControl:
             label.grid(row=i, column=j, padx=5, pady=5, sticky=W)
             self.labels.append(label)
 
-      # Botón para registrar la siguiente coordenada
+      # Register the next coordenate
       self.register_button = Button(labels_frame, text="Registrar siguiente coordenada", command=self.controller.log_next_coordenates)
       self.register_button.grid(row=3, columnspan=3, pady=5)
       self.reset_button = Button(labels_frame, text="Reiniciar", command=self.reset_coordenates)
@@ -230,6 +229,11 @@ class UiControl:
          canvas.place(x=self.default_coordenates[i][0], y=self.default_coordenates[i][1])
          self.canvas.append(canvas)
 
+      for i in  self.test_points:
+         canvas = Canvas(self.app, width=self.box_size, height=self.box_size, background="red", highlightbackground="red", highlightthickness=self.box_size + self.text_box_increment )
+         canvas.place(x=i[0], y=i[1])
+         self.canvas.append(canvas)
+
    def reset_test(self):
       self.test_index = None
       self.test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)
@@ -237,9 +241,9 @@ class UiControl:
       #self.reset_test_button.pack_forget()
 
    def bring_to_front(self):
-      # Traer la ventana al frente y centrarla.
-      self.app.attributes('-topmost', True)  # Temporalmente coloca la ventana al frente.
-      self.app.attributes('-topmost', False)  # Después la deja de poner al frente para no interferir con otras ventanas.
+      # Put the window on the front side
+      self.app.attributes('-topmost', True) 
+      self.app.attributes('-topmost', False) 
 
    def update_current_test_point(self):
       self.test_point = self.test_points[self.test_index]

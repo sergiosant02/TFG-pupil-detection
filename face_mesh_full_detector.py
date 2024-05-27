@@ -3,8 +3,9 @@ import cv2
 from pupile_detector import PupileDetector
 
 class FaceFullMeshDetector:
-    """Esta clase tiene el objetivo de reconocer los ojos y la cara, es una alternativa a la detección mediante openCV y sus modelos, 
-    ya que da un resultado mucho más bueno.
+    """
+    This class has the objective of recognizing eyes and faces, it is an alternative to detection using openCV and its models, 
+    since it gives a much better result.
     """
     def __init__(self, ui_control):
         self.cap = cv2.VideoCapture(0)

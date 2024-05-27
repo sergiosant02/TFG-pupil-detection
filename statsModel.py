@@ -6,6 +6,9 @@ import math
 
 
 class RecordModel:
+    """
+    This class help to create a record of the mouse movement
+    """
 
     def __init__(self, point, recorded: list) -> None:
         self.point = point
@@ -43,6 +46,10 @@ class RecordModel:
         
 
 class Stats: 
+
+    """
+    This class help to generate a report of the mouse movement
+    """
 
     def __init__(self, records: list[RecordModel]) -> None:
         self.records = records

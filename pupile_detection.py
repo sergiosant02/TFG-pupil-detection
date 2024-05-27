@@ -41,7 +41,6 @@ class pupil_detection():
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])
         self._centroid = (cX,cY)
-        #cv2.circle(self._img, (cX, cY), 5, (255, 255, 255), -1)
         
     def detect_pupil (self):
         dst = cv2.fastNlMeansDenoisingColored(self._img,None,10,10,7,21)
@@ -77,5 +76,3 @@ class pupil_detection():
         else:
             print('Image file "' + self._img_path + '" could not be loaded.')
         
-id = pupil_detection(r'positions/picture1.jpg')
-id.start_detection()

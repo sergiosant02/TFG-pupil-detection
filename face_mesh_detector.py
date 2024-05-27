@@ -3,7 +3,7 @@ import cv2
 
 class FaceEyeMeshDetector:
     """
-    Esta clase tiene el objetivo de reconocer los ojo, de usarse en conjkunción de detectionClass
+    This class is intended to recognize the eyes, to be used in conjunction with detectionClass
     """
     def __init__(self, image):
         self.detector = FaceMeshDetector(maxFaces=1)

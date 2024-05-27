@@ -5,8 +5,8 @@ from pupile_detector import PupileDetector
 
 class Detection:
     """
-    Esta clase detecta la cara y los ojos, luego procesa esa información para pasarla a face_mesh_detector, 
-    con el objetivo de encontrar los puntos clave del ojo, para las referencias.
+    This class detects the face and the eyes, then processes that information to pass it to face_mesh_detector,
+    with the purpose of finding the key points of the eye, to be used in conjunction with detectionClass.
     """
     def __init__(self, ui_control):
         self.ui_control = ui_control
@@ -74,7 +74,6 @@ class Detection:
             if frame is not None and frame.any():
                 frame = self.detect_faces(img=frame)
                 if frame is not None and frame.shape[0] > 0 and frame.shape[1] > 0:
-                    #cv2.imshow('frame', frame)
                     if cv2.waitKey(1) & 0xFF == ord('q'):
                         break
         cap.release()
@@ -82,5 +81,4 @@ class Detection:
 
     def start(self, frame):
         if frame is not None and frame.any():
-            #cv2.imshow('test',frame)
             frame = self.detect_faces(img=frame)

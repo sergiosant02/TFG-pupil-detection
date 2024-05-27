@@ -48,8 +48,6 @@ class EyeControlledMouse:
         self.eye_down_right_decimal = self.get_coordenates_decimal(373)
         self.eye_up_left = self.convert_coordenate(158)
         self.eye_down_left = self.convert_coordenate(144)
-        #self.right_center = (((right_eye2[0] + self.right_eye1[0])//2 + (self.eye_up_right[0] + self.eye_down_right[0])//2)//2, ((right_eye2[1] + self.right_eye1[1])//2 + (self.eye_up_right[1] + self.eye_down_right[1])//2)//2)
-        #self.right_center_decimal = (((self.right_eye2_decimal[0] + self.right_eye1_decimal[0])/2 + (self.eye_up_right_decimal[0] + self.eye_down_right_decimal[0])/2)/2, ((self.right_eye2_decimal[1] + self.right_eye1_decimal[1])/2 + (self.eye_up_right_decimal[1] + self.eye_down_right_decimal[1])/2)/2)
         self.right_center = ((right_eye2[0] + self.right_eye1[0])//2, (self.eye_up_right[1] + self.eye_down_right[1])//2 )
         self.right_center_decimal = ((self.right_eye2_decimal[0] + self.right_eye1_decimal[0])/2 , (self.eye_up_right[1] + self.eye_down_right[1])/2 )
         self.left_center = (((left_eye2[0] + self.left_eye1[0]) // 2 + (self.eye_up_left[0] + self.eye_down_left[0]) // 2) // 2, ((left_eye2[1] + self.left_eye1[1]) // 2 + (self.eye_up_left[1] + self.eye_down_left[1]) // 2) // 2)
@@ -69,7 +67,6 @@ class EyeControlledMouse:
         screen_y = self.frame_h * eye_y
         self.new_center = [int(screen_x)//1,int(screen_y)//1]
         cv2.circle(frame, self.new_center, 1, (0, 255, 255))
-        #pyautogui.moveTo(screen_x, screen_y)
 
 
     def calculate_correction(self):

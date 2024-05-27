@@ -1,9 +1,6 @@
-#import face_recognition
-#from PIL import Image
 import cv2
 from cv2 import KeyPoint
 import numpy as np  
-#from pupil_detectors import Detector2D
 
 detector_params = cv2.SimpleBlobDetector_Params()
 detector_params.filterByArea = True
@@ -65,16 +62,13 @@ def detect_eyes(frame, gray):
 
 def detect_pupil_on_eye(img_original):
     gray_frame = cv2.cvtColor(img_original, cv2.COLOR_BGR2GRAY)
-    #gray_frame = cv2.equalizeHist(gray_frame1)
-    #comp = np.hstack((gray_frame1, gray_frame))
-    #cv2.imshow("post", comp)
     _, img = cv2.threshold(gray_frame, 25, 255, cv2.THRESH_BINARY)
     
     img = cv2.erode(img, None, iterations=3) 
     img = cv2.dilate(img, None, iterations=5) 
     img = cv2.medianBlur(img, 5) 
     keypoints: list[KeyPoint] = detector.detect(img) 
-    if len(keypoints) > 1: # con esto evito falsos positivos
+    if len(keypoints) > 1: # To aboid false positives
         t = max(keypoints, key=lambda x: x.size)
         keypoints = [t]
     return keypoints
