@@ -229,11 +229,6 @@ class UiControl:
          canvas.place(x=self.default_coordenates[i][0], y=self.default_coordenates[i][1])
          self.canvas.append(canvas)
 
-      for i in  self.test_points:
-         canvas = Canvas(self.app, width=self.box_size, height=self.box_size, background="red", highlightbackground="red", highlightthickness=self.box_size + self.text_box_increment )
-         canvas.place(x=i[0], y=i[1])
-         self.canvas.append(canvas)
-
    def reset_test(self):
       self.test_index = None
       self.test_button.pack(fill=BOTH, expand=True, padx=10, pady=2)

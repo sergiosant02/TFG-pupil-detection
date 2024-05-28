@@ -22,7 +22,7 @@ class PupileDetector:
         img = cv2.dilate(img, None, iterations=5) 
         img = cv2.medianBlur(img, 5) 
         keypoints = self.detector.detect(img) 
-        if len(keypoints) > 1: # con esto evito falsos positivos
+        if len(keypoints) > 1: # To avoid false positives
             t = max(keypoints, key=lambda x: x.size)
             keypoints = [t]
         if len(keypoints) > 0:

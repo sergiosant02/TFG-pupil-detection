@@ -146,9 +146,3 @@ class ApplicationController:
 
     def format_text_in_label(self, i: int, text):
       self.ui_control.format_text_in_label(i, text)
-
-    
-
-if __name__ == "__main__":
-    app_controller = ApplicationController()
-    app_controller.start()
