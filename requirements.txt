@@ -1,8 +1,5 @@
-dlib
-face_recognition
 opencv-python
 numpy
-#pupil-detectors # posiblemente prescindible
 pyautogui
 pygame
 mediapipe # para face_mesh

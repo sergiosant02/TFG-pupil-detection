@@ -38,6 +38,14 @@ Para iniciar el proyecto, simplemente ejecuta el script principal desde la líne
 python main.py
 ```
 
+### Si aparece el error ImportError: No module named 'Tkinter'
+
+He observado que en ciertas distribuciones de Linux Tkinter no esta presente, para instalarlo:
+
+```bash
+sudo apt-get install python3-tk
+```
+
 ## Calibración del Sistema
 
 Antes de comenzar a usar el sistema para controlar el cursor del ratón, es crucial realizar un proceso de calibración. Este proceso asegura que el sistema pueda interpretar correctamente hacia dónde está mirando el usuario basándose en la posición de la pupila.
