@@ -146,3 +146,6 @@ class ApplicationController:
 
     def format_text_in_label(self, i: int, text):
       self.ui_control.format_text_in_label(i, text)
+
+    def get_use_both_eyes(self):
+        return self.ui_control.use_both_eyes

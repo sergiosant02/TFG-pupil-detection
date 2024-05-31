@@ -7,6 +7,7 @@ from interpolate2D import InterpolatePixelTarget
 import time
 from tkinter import Canvas, BOTH
 from statsModel import RecordModel,Stats
+from database_service import DatabaseService
 
 class EyeControlledMouse:
 
@@ -14,7 +15,7 @@ class EyeControlledMouse:
     def __init__(self, controller):
         self.face_mesh = mp.solutions.face_mesh.FaceMesh(refine_landmarks=True)
         self.screen_w, self.screen_h = pyautogui.size()
-        self.ui_control = controller
+        self.controller = controller
         self.radius = 1
         self.color = (0, 0, 255)
         self.new_left_center = None
@@ -28,6 +29,7 @@ class EyeControlledMouse:
         self.record: RecordModel = None
         self.flag = False
         self.min_close = 0.015
+        self.database_service = DatabaseService()
 
     def get_coordenates_decimal(self, index):
         return (self.landmarks[index].x * self.frame_w, self.landmarks[index].y * self.frame_h)
@@ -71,10 +73,10 @@ class EyeControlledMouse:
 
     def calculate_correction(self):
         print(f"Para calcular la correción ---- right pupile: {self.right_pupile} ---- right center: {self.right_center}")
-        self.ui_control.set_correction('left', tuple(x - y for x, y in zip(self.left_pupile, self.left_center)))
-        self.ui_control.set_correction('right', tuple(x - y for x, y in zip(self.right_pupile, self.right_center)))
-        self.new_left_center = tuple(x + y for x, y in zip(self.ui_control.get_correction('left'), self.left_center))
-        self.new_right_center = tuple(x + y for x, y in zip(self.ui_control.get_correction('right'), self.right_center))
+        self.controller.set_correction('left', tuple(x - y for x, y in zip(self.left_pupile, self.left_center)))
+        self.controller.set_correction('right', tuple(x - y for x, y in zip(self.right_pupile, self.right_center)))
+        self.new_left_center = tuple(x + y for x, y in zip(self.controller.get_correction('left'), self.left_center))
+        self.new_right_center = tuple(x + y for x, y in zip(self.controller.get_correction('right'), self.right_center))
         
     def generate_rectangle_coordenates(self, center_up, external_point, center_down):
         left_corner = (center_up[0] - (center_up[0] - external_point[0] + 5), center_up[1] - 5)
@@ -98,9 +100,9 @@ class EyeControlledMouse:
                 right = [self.landmarks[374], self.landmarks[386]]
                 self.draw_eye_center(frame)
                 self.draw_eye_limits(frame)
-                if self.ui_control.get_correction('left') is not None and self.ui_control.get_correction('right') is not None:
-                    self.new_left_center = tuple(x + y for x, y in zip(self.ui_control.get_correction('left'), self.left_center))
-                    self.new_right_center = tuple(x + y for x, y in zip(self.ui_control.get_correction('right'), self.right_center))
+                if self.controller.get_correction('left') is not None and self.controller.get_correction('right') is not None:
+                    self.new_left_center = tuple(x + y for x, y in zip(self.controller.get_correction('left'), self.left_center))
+                    self.new_right_center = tuple(x + y for x, y in zip(self.controller.get_correction('right'), self.right_center))
                 if self.new_right_center is not None and self.new_right_center is not None:
                     cv2.circle(frame, self.new_left_center, 2, (255, 0, 255), cv2.FILLED)
                     cv2.circle(frame, self.new_right_center, 2, (255, 0, 255), cv2.FILLED)
@@ -109,16 +111,22 @@ class EyeControlledMouse:
                     y = int(landmark.y * self.frame_h)
                     cv2.circle(frame, (x, y), 3, (0, 255, 255))
 
-                if len(self.ui_control.get_coordenates()) >= (9 * self.laps) and (left[0].y - left[1].y) < self.min_close and not (right[0].y - right[1].y) < self.min_close:  # Abierto solo derecho
+                if len(self.controller.get_coordenates()) >= (9 * self.laps) and ((left[0].y - left[1].y) < self.min_close and not self.controller.get_use_both_eyes()) and not (right[0].y - right[1].y) < self.min_close:  # Abierto solo derecho
                     self.get_curent_absolute_move()
-                    if self.ui_control.get_test_index() != None:
+                    if self.controller.get_test_index() != None:
+                        self.record.recorded.append(self.mouse_control.get_current_position())
+                        self.flag = True
+
+                if len(self.controller.get_coordenates()) >= (9 * self.laps) and ((left[0].y - left[1].y) > self.min_close and self.controller.get_use_both_eyes()) and not (right[0].y - right[1].y) < self.min_close:  # Abierto solo derecho
+                    self.get_curent_absolute_move()
+                    if self.controller.get_test_index() != None:
                         self.record.recorded.append(self.mouse_control.get_current_position())
                         self.flag = True
                 
-                if len(self.ui_control.get_coordenates()) >= (9 * self.laps) and (right[0].y - right[1].y) < self.min_close and not (left[0].y - left[1].y) < self.min_close and self.time_reference == 0: # Parpadeo derecho inicio contador
+                if len(self.controller.get_coordenates()) >= (9 * self.laps) and (right[0].y - right[1].y) < self.min_close and self.time_reference == 0: # Parpadeo derecho inicio contador
                     self.time_reference = time.time()
                 
-                if len(self.ui_control.get_coordenates()) >= (9 * self.laps) and (right[0].y - right[1].y) > self.min_close and not (left[0].y - left[1].y) < self.min_close and self.time_reference > 0: # Parpadeo derecho opciones
+                if len(self.controller.get_coordenates()) >= (9 * self.laps) and (right[0].y - right[1].y) > self.min_close and self.time_reference > 0: # Parpadeo derecho opciones
                     current_time = time.time()
                     if current_time -self.time_reference > 0.05 and current_time - self.time_reference <= 1:
                         self.mouse_control.click()
@@ -128,53 +136,59 @@ class EyeControlledMouse:
                         self.time_reference = 0
 
                 
-                if len(self.ui_control.get_coordenates()) >= (9 * self.laps) and ((left[0].y - left[1].y) > self.min_close and (right[0].y - right[1].y) > self.min_close): # Alguno de los ojos abiertos
+                if len(self.controller.get_coordenates()) >= (9 * self.laps) and ((left[0].y - left[1].y) > self.min_close and (right[0].y - right[1].y) > self.min_close): # Alguno de los ojos abiertos
                     if self.flag:
-                        self.ui_control.add_test()
+                        self.controller.add_test()
                         self.flag = False   
+
+                if len(self.controller.get_coordenates()) >= (9 * self.laps) and ((left[0].y - left[1].y) < self.min_close and (right[0].y - right[1].y) > self.min_close) and self.controller.get_use_both_eyes(): # Alguno de los ojos abiertos
+                    if self.flag:
+                        self.controller.add_test()
+                        self.flag = False 
                         
-                self.ui_control.set_face_frame(frame)
+                self.controller.set_face_frame(frame)
                 right_eye_left_corner, right_eye_right_corner  = self.generate_rectangle_coordenates(self.eye_up_right, self.right_eye1, self.eye_down_right)
                 right_eye_crop = frame[right_eye_left_corner[1]:right_eye_right_corner[1],  right_eye_left_corner[0]:right_eye_right_corner[0]]
-                self.ui_control.set_right_eye_frame(right_eye_crop)
+                self.controller.set_right_eye_frame(right_eye_crop)
                 left_eye_left_corner, left_eye_right_corner  = self.generate_rectangle_coordenates(self.eye_up_left, self.left_eye1, self.eye_down_left)
                 left_eye_crop = frame[left_eye_left_corner[1]:left_eye_right_corner[1],  left_eye_left_corner[0]:left_eye_right_corner[0]]
-                self.ui_control.set_left_eye_frame(left_eye_crop)
+                self.controller.set_left_eye_frame(left_eye_crop)
 
     
     def log_next_coordenate(self):
-        if len(self.ui_control.get_coordenates()) >= (9 * self.laps) - 1:
-            self.ui_control.execute_check_nineth_coordinate()
-        if len(self.ui_control.get_coordenates()) < (9 * self.laps):
+        if len(self.controller.get_coordenates()) >= (9 * self.laps) - 1:
+            self.controller.execute_check_nineth_coordinate()
+        if len(self.controller.get_coordenates()) < (9 * self.laps):
             self.interpolator = None
             right_pupile_decimal = self.get_coordenates_decimal(473)
             coordenate = tuple(round(x - y, self.decimal_precision)for x, y in zip(self.new_center, right_pupile_decimal))
             print(f"self.eye_down_right: {self.eye_down_right}, right_pupile_decimal: {right_pupile_decimal}")
-            self.ui_control.get_coordenates().append(coordenate)
+            self.controller.get_coordenates().append(coordenate)
             print(f'coordenate register: {coordenate}')
 
-            self.ui_control.get_labels()[(len(self.ui_control.get_coordenates())-1)%9].configure(text=f"({coordenate[0]:.3f}, {coordenate[1]:.3f})")
+            self.controller.get_labels()[(len(self.controller.get_coordenates())-1)%9].configure(text=f"({coordenate[0]:.3f}, {coordenate[1]:.3f})")
         
 
     def get_curent_absolute_move(self):
         if self.interpolator is None:
-            self.interpolator = InterpolatePixelTarget(self.ui_control)
+            self.interpolator = InterpolatePixelTarget(self.controller)
         right_pupile_decimal = self.get_coordenates_decimal(473)
         coordenate = tuple(round(x - y, self.decimal_precision) for x, y in zip(self.new_center, right_pupile_decimal))
         next_position_decimal = self.interpolator.interpolate_move(coordenate)
         if np.all(np.isfinite(next_position_decimal)):
             print("next_position_decimal: ", next_position_decimal)
             next_position = (int(next_position_decimal[0]), int(next_position_decimal[1]))
+            self.database_service.insert_inferred_point(next_position)
             print("next_position: ", next_position)
             self.mouse_control.absolute_move(next_position)
 
     def add_test(self):
-        if self.ui_control.get_test_index() == 0:
-            self.ui_control.update_current_test_point()
-            self.record = RecordModel(self.ui_control.get_test_point(), None)
-        elif self.ui_control.get_test_index() != None and self.ui_control.get_test_index() > 0 and self.ui_control.get_test_index() < len(self.ui_control.get_test_points()):
+        if self.controller.get_test_index() == 0:
+            self.controller.update_current_test_point()
+            self.record = RecordModel(self.controller.get_test_point(), None)
+        elif self.controller.get_test_index() != None and self.controller.get_test_index() > 0 and self.controller.get_test_index() < len(self.controller.get_test_points()):
             self.records.append(self.record)
-            self.record = RecordModel(self.ui_control.get_test_point(), None)
+            self.record = RecordModel(self.controller.get_test_point(), None)
         else:
             self.records.append(self.record)
             self.save_test_results()

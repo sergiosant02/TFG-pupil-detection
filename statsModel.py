@@ -3,6 +3,7 @@ import datetime
 import os
 import pyautogui
 import math
+from database_service import DatabaseService
 
 
 class RecordModel:
@@ -17,6 +18,7 @@ class RecordModel:
         self.width, self.height = pyautogui.size()
         self.screen_width_cm = 52.7
         self.screen_height_cm = 29.6
+        self.database_service = DatabaseService()
 
     def calculate_average_point(self):
         if len(self.recorded) > 0:
@@ -42,6 +44,7 @@ class RecordModel:
             angle_y_rad = math.atan(difference_y_cm / self.view_distance)
             angle_x_deg = math.degrees(angle_x_rad)
             angle_y_deg = math.degrees(angle_y_rad)
+            self.database_service.insert_accuracy_test(self.point, self.recorded, self.average_point, angle_x_deg)
             return [f"({self.point[0]}, {self.point[1]})", f"[{points_str}]", f"{len(self.recorded)}", f"{self.get_point_str(self.error)}", f"{angle_x_deg:.3f}", f"{angle_y_deg:.3f}"]
         
 
