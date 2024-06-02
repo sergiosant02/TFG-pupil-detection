@@ -66,6 +66,7 @@ Una vez calibrado el sistema, puedes comenzar a usarlo para mover el cursor del 
 - El sistema rastrea el centro de tu pupila y calcula la dirección de tu mirada.
 - Un algoritmo interpreta estos datos para mover el cursor del ratón en la pantalla de tu ordenador.
 - Para hacer clic, realiza un parpadeo prolongado del ojo derecho durante menos de un segundo, el izquierdo debe permancecer abierto.
+- Para observar el mapa de calor, unicamente debes pulsar sobre el botón "Mostrar mapa de calor"
 
 ## Consideraciones Finales
 
