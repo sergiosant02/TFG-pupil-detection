@@ -12,3 +12,4 @@ PyGame
 PyOpenGL 
 PyOpenGL_accelerate
 pandas
+seaborn
