@@ -3,6 +3,9 @@ from tkinter.ttk import Combobox
 import cv2 
 from PIL import Image, ImageTk 
 from heartmap import HeartmapGenerator
+from tkinter import messagebox
+
+
 class UiControl:
    def __init__(self, controller):
       self.app = Tk() 
@@ -281,6 +284,9 @@ class UiControl:
 
    def change_eye_selection(self):
       self.use_both_eyes = not self.use_both_eyes
+
+   def show_alert(self, title: str, message: str):
+      messagebox.showwarning(title, message)
 
 
 
