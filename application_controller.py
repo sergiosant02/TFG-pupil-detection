@@ -33,11 +33,11 @@ class ApplicationController:
         self.eye_control.calculate_correction()
 
     def add_test(self):
-        if len(self.get_coordenates()) > 8:
+        if self.ui_control.is_full_calibrated():
             self.ui_control.add_test()
             self.eye_control.add_test()
         else:
-            self.ui_control.show_alert('Aún es pronto', "Necesitas realizar la calibración antes de hacer pruebas")
+            self.ui_control.show_alert('Aún es pronto', "Necesitas realizar la calibración antes de hacer pruebas, debes realizar dos vueltas a la calibración")
 
     def reset_test(self):
         self.ui_control.reset_test()

@@ -283,10 +283,14 @@ class UiControl:
       heartmap.generate_heatmap()
 
    def change_eye_selection(self):
+      self.reset_coordenates()
       self.use_both_eyes = not self.use_both_eyes
 
    def show_alert(self, title: str, message: str):
       messagebox.showwarning(title, message)
+
+   def is_full_calibrated(self):
+      return self.reset_button.winfo_ismapped()
 
 
 
