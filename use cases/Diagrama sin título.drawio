@@ -1,9 +1,73 @@
-<mxfile host="app.diagrams.net" modified="2024-06-04T18:41:19.153Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" version="24.4.13" etag="vxXbGk_mMCn6OSh62AIn" type="github">
-  <diagram name="Página-1" id="iYmvEm6WCaUe6pRYdG9c">
-    <mxGraphModel>
+<mxfile host="app.diagrams.net" modified="2024-06-04T19:19:07.891Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" etag="qh06h2ytEM-cq1X4gp4b" version="24.4.13" type="github" pages="2">
+  <diagram name="Calibración" id="iYmvEm6WCaUe6pRYdG9c">
+    <mxGraphModel dx="954" dy="727" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="B9avHN3gdCPOIJM2PKCx-1" value="" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="254" y="170" width="320" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="B9avHN3gdCPOIJM2PKCx-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="B9avHN3gdCPOIJM2PKCx-2" target="B9avHN3gdCPOIJM2PKCx-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B9avHN3gdCPOIJM2PKCx-2" value="Actor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="180" y="290" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="B9avHN3gdCPOIJM2PKCx-3" value="Calibrar el sistema" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="280" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="B9avHN3gdCPOIJM2PKCx-6" value="Aplicación" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="349" y="180" width="130" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="jhH5AN-WXTXXSQZq4L-W" name="Prueba de precisión">
+    <mxGraphModel dx="954" dy="727" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="4KqO8I6BovNUGPPyhPvl-1" value="" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="130" y="420" width="460" height="460" as="geometry" />
+        </mxCell>
+        <mxCell id="4KqO8I6BovNUGPPyhPvl-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="4KqO8I6BovNUGPPyhPvl-3" target="4KqO8I6BovNUGPPyhPvl-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4KqO8I6BovNUGPPyhPvl-3" value="Actor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry y="570" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4KqO8I6BovNUGPPyhPvl-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="4KqO8I6BovNUGPPyhPvl-4" target="4KqO8I6BovNUGPPyhPvl-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4KqO8I6BovNUGPPyhPvl-4" value="Calibrar el sistema" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="560" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="4KqO8I6BovNUGPPyhPvl-5" value="Aplicación" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="295" y="440" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="4KqO8I6BovNUGPPyhPvl-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="4KqO8I6BovNUGPPyhPvl-6" target="4KqO8I6BovNUGPPyhPvl-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4KqO8I6BovNUGPPyhPvl-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1" source="4KqO8I6BovNUGPPyhPvl-6" target="4KqO8I6BovNUGPPyhPvl-10">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="650" y="600" />
+              <mxPoint x="650" y="720" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4KqO8I6BovNUGPPyhPvl-6" value="Prueba de precisión" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="414" y="560" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="4KqO8I6BovNUGPPyhPvl-8" value="" style="shape=datastore;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="710" y="570" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4KqO8I6BovNUGPPyhPvl-10" value="" style="shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#4495D1;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.veeam.checked_doc;" vertex="1" parent="1">
+          <mxGeometry x="715" y="700" width="50.8" height="61.6" as="geometry" />
+        </mxCell>
+        <mxCell id="4KqO8I6BovNUGPPyhPvl-12" value="&amp;lt;&amp;lt;Resultados&amp;gt;&amp;gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="610" y="570" width="60" height="30" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
