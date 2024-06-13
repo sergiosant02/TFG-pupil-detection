@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from practice.face_mesh_detector import FaceEyeMeshDetector
-from src.detection.pupile_detector import PupileDetector
+from practice.pupile_detector import PupileDetector
 
 class Detection:
     """
