@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter.ttk import Combobox
 import cv2 
 from PIL import Image, ImageTk 
-from heartmap import HeartmapGenerator
+from stats.heartmap import HeartmapGenerator
 from tkinter import messagebox
 
 

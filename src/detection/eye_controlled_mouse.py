@@ -2,12 +2,11 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import pyautogui
-from mouse_control import MouseControl
-from interpolate2D import InterpolatePixelTarget
+from control.mouse_control import MouseControl
+from detection.interpolate2D import InterpolatePixelTarget
 import time
-from tkinter import Canvas, BOTH
-from statsModel import RecordModel,Stats
-from database_service import DatabaseService
+from stats.statsModel import RecordModel,Stats
+from database.database_service import DatabaseService
 
 class EyeControlledMouse:
 

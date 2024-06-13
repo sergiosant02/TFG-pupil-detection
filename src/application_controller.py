@@ -1,5 +1,5 @@
-from ui_control import UiControl
-from eye_controlled_mouse import EyeControlledMouse
+from ui.ui_control import UiControl
+from detection.eye_controlled_mouse import EyeControlledMouse
 import cv2
 
 

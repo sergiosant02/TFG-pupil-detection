@@ -1,8 +1,7 @@
-import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from database_service import DatabaseService
+from database.database_service import DatabaseService
 from tkinter import *
 import pyautogui
 

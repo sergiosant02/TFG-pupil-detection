@@ -3,7 +3,7 @@ import datetime
 import os
 import pyautogui
 import math
-from database_service import DatabaseService
+from database.database_service import DatabaseService
 
 
 class RecordModel:

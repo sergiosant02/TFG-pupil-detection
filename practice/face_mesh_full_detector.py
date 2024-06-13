@@ -1,6 +1,6 @@
 from cvzone.FaceMeshModule import FaceMeshDetector
 import cv2
-from pupile_detector import PupileDetector
+from src.detection.pupile_detector import PupileDetector
 
 class FaceFullMeshDetector:
     """
