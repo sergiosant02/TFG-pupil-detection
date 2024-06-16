@@ -1,10 +1,10 @@
-<mxfile host="app.diagrams.net" modified="2024-06-16T15:55:44.535Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15" etag="pzlO3harLEZMLGDdHYh9" version="24.5.4" type="github">
+<mxfile host="app.diagrams.net" modified="2024-06-16T15:59:02.532Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15" etag="tnjK4cO7ix4h5H7mEUY1" version="24.5.4" type="github">
   <diagram name="Page-1" id="2a216829-ef6e-dabb-86c1-c78162f3ba2b">
     <mxGraphModel dx="1136" dy="1735" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="26TlRX8QNJJSIPVoDLTe-20" value="Pool" style="swimlane;childLayout=stackLayout;resizeParent=1;resizeParentMax=0;horizontal=0;startSize=20;horizontalStack=0;html=1;" vertex="1" parent="1">
+        <mxCell id="26TlRX8QNJJSIPVoDLTe-20" value="Pupile detector" style="swimlane;childLayout=stackLayout;resizeParent=1;resizeParentMax=0;horizontal=0;startSize=20;horizontalStack=0;html=1;" vertex="1" parent="1">
           <mxGeometry x="100" y="40" width="1870" height="610" as="geometry" />
         </mxCell>
         <mxCell id="26TlRX8QNJJSIPVoDLTe-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="26TlRX8QNJJSIPVoDLTe-20" source="26TlRX8QNJJSIPVoDLTe-27" target="26TlRX8QNJJSIPVoDLTe-29">
