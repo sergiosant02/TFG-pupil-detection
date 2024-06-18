@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter.ttk import Combobox
 import cv2 
 from PIL import Image, ImageTk 
-from stats.heartmap import HeartmapGenerator
 from tkinter import messagebox
 
 
@@ -140,7 +139,7 @@ class UiControl:
       # Register the next coordenate
       self.register_button = Button(labels_frame, text="Registrar siguiente coordenada", command=self.controller.log_next_coordenates)
       self.register_button.grid(row=3, columnspan=3, pady=5)
-      self.heartmap = Button(labels_frame, text="Mostrar mapa de calor", command=self.show_heartmap)
+      self.heartmap = Button(labels_frame, text="Mostrar mapa de calor", command=self.controller.show_heartmap)
       self.heartmap.grid(row=4, columnspan=3, pady=5)
       checkbutton = Checkbutton(labels_frame, text='Habilitar control con los dos ojos abiertos',variable=self.use_both_eyes, onvalue=1, offvalue=0, command=self.change_eye_selection)
       checkbutton.grid(row=5, columnspan=3, pady=5)
@@ -277,10 +276,6 @@ class UiControl:
 
    def format_text_in_label(self, i: int, text):
       self.labels[i].configure(text=text)
-
-   def show_heartmap(self):
-      heartmap = HeartmapGenerator()
-      heartmap.generate_heatmap()
 
    def change_eye_selection(self):
       self.reset_coordenates()

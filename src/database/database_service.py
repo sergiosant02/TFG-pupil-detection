@@ -27,3 +27,7 @@ class DatabaseService:
     def get_inferred_points(self):
         self.cursor.execute("""SELECT point_x, point_y FROM InferredPoints""")
         return self.cursor.fetchall()
+    
+    def get_inferred_points_count(self):
+        self.cursor.execute("""SELECT count(*) FROM InferredPoints""")
+        return self.cursor.fetchone()[0]

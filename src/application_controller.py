@@ -1,5 +1,7 @@
 from ui.ui_control import UiControl
+from stats.heartmap import HeartmapGenerator
 from detection.eye_controlled_mouse import EyeControlledMouse
+from database.database_service import DatabaseService
 import cv2
 
 
@@ -8,6 +10,7 @@ class ApplicationController:
         self.ui_control = UiControl(self)
         self.eye_control = EyeControlledMouse(self)
         self.vid = cv2.VideoCapture(0) 
+        self.database_service = DatabaseService()
         self.framne = None
 
     def start(self):
@@ -152,3 +155,10 @@ class ApplicationController:
 
     def get_use_both_eyes(self):
         return self.ui_control.use_both_eyes
+    
+    def show_heartmap(self):
+      if self.database_service.get_inferred_points_count() < 1:
+          self.ui_control.show_alert("No hay datos", "No hay datos suficientes para calcular el mapa de calor. Aún no se ha usado la aplicación por lo que no hay datos.")
+      else:
+            heartmap = HeartmapGenerator()
+            heartmap.generate_heatmap()
