@@ -158,7 +158,7 @@ class ApplicationController:
     
     def show_heartmap(self):
       if self.database_service.get_inferred_points_count() < 1:
-          self.ui_control.show_alert("No hay datos", "No hay datos suficientes para calcular el mapa de calor. Aún no se ha usado la aplicación por lo que no hay datos.")
+            self.ui_control.show_alert("No hay datos", "No hay datos suficientes para calcular el mapa de calor. Aún no se ha usado la aplicación por lo que no hay datos.")
       else:
             heartmap = HeartmapGenerator()
             heartmap.generate_heatmap()
